@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://js.arcgis.com/3.22/esri/css/esri.css">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+<style>
+* {
+  box-sizing: border-box;
+}
+#map {
+height: 100%;
+width: 100%;
+margin: 0;
+padding: 0;
+}
+body {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 30px;
+	letter-spacing: 0px;
+	word-spacing: -1.2px;
+	color: #373737;
+	font-weight: 700;
+	font-style: normal;
+	font-variant: small-caps;
+}
+.formasStils{
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 30px;
+	letter-spacing: 0px;
+	word-spacing: -1.2px;
+	color: #373737;
+	font-weight: 700;
+	font-style: normal;
+	font-variant: small-caps;
+}
+header {
+  background-color: #666;
+  padding: 20px;
+  text-align: center;
+  font-size: 25px;
+  color: white;
+  height: 100px;
+}
+
+nav {
+  float: left;
+  width: 20%;
+  padding: 20px;
+}
+
+article {
+  float: left;
+  padding: 20px;
+  width: 80%;
+  height: 800px;
+  background-color: #f1f1f1;
+}
+section:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 100px;
+  width: 100%;
+  overflow: hidden;
+  background-color: #666;
+  padding: 10px;
+  text-align: center;
+  color: white;
+  height: 10%;
+}
+
+</style>
+<script src="https://js.arcgis.com/3.22/"></script>
+<script>
+	var map, csv;
+	require([
+	"esri/map",
+	"esri/layers/CSVLayer",
+	"esri/Color",
+	"esri/symbols/SimpleMarkerSymbol",
+	"esri/renderers/SimpleRenderer",
+	"esri/InfoTemplate",
+	"esri/config",
+	"dojo/domReady!"
+	], function(
+	Map, CSVLayer, Color, SimpleMarkerSymbol, SimpleRenderer, InfoTemplate, esriConfig
+	) {
+	// Use CORS
+	esriConfig.defaults.io.corsEnabledServers.push("data.gov.lv"); // supports CORS
+	// Use proxy if the server doesn't support CORS
+	// esriConfig.defaults.io.proxyUrl = "/proxy/";
+	map = new Map("map", {
+	basemap: "gray",
+	center: [ 24.1052,56.9496 ],
+	zoom: 8
+	});
+	
+	csv = new CSVLayer("https://data.gov.lv/dati/dataset/66a30fa4-9401-4885-9de0-e2c76dd5f4d4/resource/5947f1ba-7427-4ba7-9983-df543b1b6d3f/download/pppv_zemes-portalam_18072019_lvgmc.csv", {
+		copyright: "data.gov.lv",
+		latitudeFieldName: "Y koordināta",
+		longitudeFieldName: "X koordināta",
+		delimiter: ";",
+		definitionExpression: "'Vieta' = 'Krustpils'"
+	});
+	csv.latitudeFieldName = "Y koordināta";
+	csv.longitudeFieldName = "X koordināta";
+	csv.delimiter = ";";
+	var orangeRed = new Color([238, 69, 0, 0.5]); // hex is #ff4500
+	var marker = new SimpleMarkerSymbol("solid", 15, null, orangeRed);
+	var renderer = new SimpleRenderer(marker);
+	csv.setRenderer(renderer);
+	var template = new InfoTemplate("${Nosaukums}", "${Adrese}","${Kategorija}");
+	csv.setInfoTemplate(template);
+	map.addLayer(csv);
+	});
+</script>
+
+</head>
+<body>
+<header>
+  <h2>Pieprasītākās profesijas Latvijā</h2>
+</header>
+
+<nav>
+ <form name="form1" id="form1" class="formasStils">
+  Profesija: <select name="subject" id="subject"><br>
+    <option value="" selected="selected"> Izvēlies profesiju...</option>
+  </select>
+  <br><br>
+  Reģions:<br> <select name="subject" id="subject">
+    <option value="" selected="selected">Select subject</option>
+  </select>
+  <br><br>
+  Pilsēta: 
+      <input type="text" placeholder="Meklēt.." name="search">
+      <button type="submit"><i class="fa fa-search"></i></button>
+	  <br><br>
+  Minimālā alga no: <br><select name="subject" id="subject">
+    <option value="" selected="selected">Select subject</option>
+  </select>
+  <br><br>
+  <input type="submit" value="Submit">
+</form>  
+ 
+</nav>
+  
+  <article>
+    <div id="map"></div>
+  </article>
+</section>
+
+<footer>
+  <p>Made by "The Boring Team"</p>
+</footer>
+
+</body>
+</html>
